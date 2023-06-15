@@ -1,4 +1,3 @@
 ghapi
 ipywidgets
-jupyter
 pandas
