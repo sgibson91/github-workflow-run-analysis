@@ -41,7 +41,7 @@ for workflow_run in workflow_runs:
 
 df["run_time"] = pd.to_datetime(df["run_time"])
 df.fillna(0, inplace=True)
-df.to_csv("all_workflow_run_data.csv")
+df.to_csv("all_workflow_run_data.csv", index=False)
 
 df = df.resample("M", on="run_time").sum()
 df.to_csv("workflow_run_data_monthly_resample.csv")
