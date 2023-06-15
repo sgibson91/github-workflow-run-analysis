@@ -32,6 +32,7 @@ if total_pages > 1:
 
 # Instantiate empty dataframes
 wf_df = pd.DataFrame({})
+conclusion_df = pd.DataFrame({})
 
 for workflow_run in workflow_runs:
     # Append an instance of the workflow run to a dataframe
@@ -45,14 +46,24 @@ for workflow_run in workflow_runs:
     wf_df = pd.concat([wf_df, tmp_wf_df], ignore_index=True)
     wf_df.reset_index(inplace=True, drop=True)
 
+    # Append the conclusion of a workflow run to a dataframe
+    tmp_concl_df = pd.DataFrame(
+        {
+            "run_time": workflow_run["run_started_at"],
+            workflow_run["path"]: workflow_run["conclusion"]
+        },
+        index=[0],
+    )
+    conclusion_df = pd.concat([conclusion_df, tmp_concl_df], ignore_index=True)
+    conclusion_df.reset_index(inplace=True, drop=True)
+
 # Post-process dataframes and save copies
 wf_df["run_time"] = pd.to_datetime(wf_df["run_time"])
 wf_df.fillna(0, inplace=True)
 wf_df.to_csv("workflow_run_count_data.csv", index=False)
 
-df["run_time"] = pd.to_datetime(df["run_time"])
-df.fillna(0, inplace=True)
-df.to_csv("all_workflow_run_data.csv", index=False)
+conclusion_df["run_time"] = pd.to_datetime(conclusion_df["run_time"])
+conclusion_df.to_csv("workflow_run_conclusion_data.csv", index=False)
 
 # Resample data to monthly intervals and save a copy
 wf_df = wf_df.resample("M", on="run_time").sum()
