@@ -1,3 +1,4 @@
 ghapi
 ipywidgets
+matplotlib
 pandas
