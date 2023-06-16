@@ -1,6 +1,7 @@
 # TODO: Add input vars to set owner/repo and start date to collect data from
 
 import os
+import re
 import requests
 import pandas as pd
 
@@ -21,17 +22,13 @@ repo = "2i2c-org/infrastructure"
 
 # Get list of GitHub Actions workflow runs for repo
 url = "/".join([api_url, "repos", repo, "actions", "runs"])
-params = {
-    "status": "failure",
-    "created": ">2023-06-12",
-    "per_page": 100,
-}
-response = requests.get(url, headers=headers, params=params)
+response = requests.get(url, headers=headers, params={"created": ">=2022-06-01", "per_page": 100})
 workflow_runs = response.json()["workflow_runs"]
 
 # Detect if pagination is required and execute as needed
-while "Link" in response.headers.keys():
-    response = requests.get(response.headers["Link"], headers=headers)
+while ("Link" in response.headers.keys()) and ('rel="next"' in response.headers["Link"]):
+    next_url = re.search('(?<=<)([\S]*)(?=>; rel="next")', response.headers["Link"])
+    response = requests.get(next_url.group(0), headers=headers)
     workflow_runs.extend(response.json()["workflow_runs"])
 
 # Instantiate empty dataframe
