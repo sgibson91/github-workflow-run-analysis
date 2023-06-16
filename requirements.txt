@@ -1,4 +1,4 @@
-ghapi
 ipywidgets
 matplotlib
 pandas
+requests
