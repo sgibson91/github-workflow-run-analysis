@@ -22,12 +22,13 @@ repo = "2i2c-org/infrastructure"
 
 # Get list of GitHub Actions workflow runs for repo
 url = "/".join([api_url, "repos", repo, "actions", "runs"])
-response = requests.get(url, headers=headers, params={"created": ">=2022-06-01", "per_page": 100})
+params = {"created": ">=2022-06-01", "per_page": 100}
+response = requests.get(url, headers=headers, params=params)
 workflow_runs = response.json()["workflow_runs"]
 
 # Detect if pagination is required and execute as needed
 while ("Link" in response.headers.keys()) and ('rel="next"' in response.headers["Link"]):
-    next_url = re.search('(?<=<)([\S]*)(?=>; rel="next")', response.headers["Link"])
+    next_url = re.search(r'(?<=<)([\S]*)(?=>; rel="next")', response.headers["Link"])
     response = requests.get(next_url.group(0), headers=headers)
     workflow_runs.extend(response.json()["workflow_runs"])
 
@@ -41,7 +42,7 @@ for workflow_run in workflow_runs:
             "run_time": workflow_run["run_started_at"],
             workflow_run["path"]: 1,
         },
-        index=[0]
+        index=[0],
     )
     wf_df = pd.concat([wf_df, tmp_wf_df], ignore_index=True)
     wf_df.reset_index(inplace=True, drop=True)
