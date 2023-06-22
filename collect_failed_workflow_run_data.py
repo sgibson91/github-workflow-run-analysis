@@ -46,10 +46,7 @@ pattern = re.compile("API rate limit exceeded for installation ID")
 # Instantiate empty dataframe
 wf_df = pd.DataFrame({})
 
-for i, workflow_run in enumerate(workflow_runs):
-    # if i > 0:
-    #     break
-
+for workflow_run in workflow_runs:
     # Download the logs
     response = requests.get(workflow_run["logs_url"], headers=headers, stream=True)
     
