@@ -86,18 +86,6 @@ for workflow_run in workflow_runs:
         else:
             os.remove(ifile)
 
-for workflow_run in workflow_runs:
-    # Append an instance of each workflow run to a dataframe
-    tmp_wf_df = pd.DataFrame(
-        {
-            "run_time": workflow_run["run_started_at"],
-            workflow_run["path"]: 1,
-        },
-        index=[0]
-    )
-    wf_df = pd.concat([wf_df, tmp_wf_df], ignore_index=True)
-    wf_df.reset_index(inplace=True, drop=True)
-
 # Post-process dataframes and save copies
 wf_df["run_time"] = pd.to_datetime(wf_df["run_time"])
 wf_df.fillna(0, inplace=True)
