@@ -50,9 +50,14 @@ for workflow_run in workflow_runs:
     # Download the logs
     response = requests.get(workflow_run["logs_url"], headers=headers, stream=True)
     
-    # Extract the logs
-    with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
-        zip_ref.extractall(os.getcwd())
+    try:
+        # Extract the logs
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
+            zip_ref.extractall(os.getcwd())
+    except zipfile.BadZipFile:
+        # This usually means the logs have been deleted, so we break the loop as
+        # we have hit the limit of the retention policy
+        break
 
     # Establish which files have been downloaded
     updated_files = set(os.listdir(os.getcwd()))
