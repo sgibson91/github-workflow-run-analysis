@@ -2,8 +2,9 @@
 
 import os
 import re
-import requests
+
 import pandas as pd
+import requests
 
 api_url = "https://api.github.com"
 
@@ -27,7 +28,9 @@ response = requests.get(url, headers=headers, params=params)
 workflow_runs = response.json()["workflow_runs"]
 
 # Detect if pagination is required and execute as needed
-while ("Link" in response.headers.keys()) and ('rel="next"' in response.headers["Link"]):
+while ("Link" in response.headers.keys()) and (
+    'rel="next"' in response.headers["Link"]
+):
     next_url = re.search(r'(?<=<)([\S]*)(?=>; rel="next")', response.headers["Link"])
     response = requests.get(next_url.group(0), headers=headers)
     workflow_runs.extend(response.json()["workflow_runs"])

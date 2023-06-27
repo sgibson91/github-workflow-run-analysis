@@ -1,10 +1,11 @@
-import os
 import io
+import os
 import re
-import requests
-import pandas as pd
-import zipfile
 import shutil
+import zipfile
+
+import pandas as pd
+import requests
 
 # Create a set of the current files in the directory
 current_files = set(os.listdir(os.getcwd()))
@@ -35,7 +36,9 @@ response = requests.get(url, headers=headers, params=params)
 workflow_runs = response.json()["workflow_runs"]
 
 # Detect if pagination is required and execute as needed
-while ("Link" in response.headers.keys()) and ('rel="next"' in response.headers["Link"]):
+while ("Link" in response.headers.keys()) and (
+    'rel="next"' in response.headers["Link"]
+):
     next_url = re.search(r'(?<=<)([\S]*)(?=>; rel="next")', response.headers["Link"])
     response = requests.get(next_url.group(0), headers=headers)
     workflow_runs.extend(response.json()["workflow_runs"])
@@ -49,7 +52,7 @@ wf_df = pd.DataFrame({})
 for workflow_run in workflow_runs:
     # Download the logs
     response = requests.get(workflow_run["logs_url"], headers=headers, stream=True)
-    
+
     try:
         # Extract the logs
         with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
