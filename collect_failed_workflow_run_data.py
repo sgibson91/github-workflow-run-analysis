@@ -90,6 +90,10 @@ for workflow_run in workflow_runs:
 try:
     wf_df["run_time"] = pd.to_datetime(wf_df["run_time"])
     wf_df.fillna(0, inplace=True)
+
+    for column in wf_df.columns.tolist():
+        if column != "run_time":
+            wf_df[column] = wf_df[column].astype(int)
 except KeyError:
     pass
 
