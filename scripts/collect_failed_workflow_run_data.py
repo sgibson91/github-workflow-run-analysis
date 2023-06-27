@@ -98,11 +98,11 @@ except KeyError:
     pass
 
 if len(wf_df) > 0:
-    wf_df.to_csv("failed_workflow_run_count_data.csv", index=False)
+    wf_df.to_csv("../data/failed_workflow_run_count_data.csv", index=False)
 
 try:
     # Resample data to daily intervals and save a copy
     wf_df = wf_df.resample("D", on="run_time").sum()
-    wf_df.to_csv("failed_workflow_run_data_daily_resample.csv")
+    wf_df.to_csv("../data/failed_workflow_run_data_daily_resample.csv")
 except KeyError:
     pass
