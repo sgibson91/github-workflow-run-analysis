@@ -24,7 +24,7 @@ headers = {
 
 repo = "2i2c-org/infrastructure"
 
-#Get list of failed GitHub Actions workflow runs for repo after a set date
+# Get list of failed GitHub Actions workflow runs for repo after a set date
 url = "/".join([api_url, "repos", repo, "actions", "runs"])
 params = {
     "status": "failure",
@@ -87,10 +87,18 @@ for workflow_run in workflow_runs:
             os.remove(ifile)
 
 # Post-process dataframes and save copies
-wf_df["run_time"] = pd.to_datetime(wf_df["run_time"])
-wf_df.fillna(0, inplace=True)
-wf_df.to_csv("failed_workflow_run_count_data.csv", index=False)
+try:
+    wf_df["run_time"] = pd.to_datetime(wf_df["run_time"])
+    wf_df.fillna(0, inplace=True)
+except KeyError:
+    pass
 
-# Resample data to daily intervals and save a copy
-wf_df = wf_df.resample("D", on="run_time").sum()
-wf_df.to_csv("failed_workflow_run_data_daily_resample.csv")
+if len(wf_df) > 0:
+    wf_df.to_csv("failed_workflow_run_count_data.csv", index=False)
+
+try:
+    # Resample data to daily intervals and save a copy
+    wf_df = wf_df.resample("D", on="run_time").sum()
+    wf_df.to_csv("failed_workflow_run_data_daily_resample.csv")
+except KeyError:
+    pass
