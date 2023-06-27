@@ -1,0 +1,12 @@
+name: Ensure Clean Notebook Outputs
+
+on:
+  push:
+    paths:
+      - "**.ipynb"
+
+jobs:
+  ensure-clean-notebooks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: sgibson91/.github/.github/workflows/clean-notebook-outputs.yaml@main
